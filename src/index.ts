@@ -38,14 +38,23 @@ app.use(
   })
 );
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  process.env.FRONTEND_URL,
+  'https://trao-ai-travel-planner-blue.vercel.app'
+].filter(Boolean) as string[];
+
 app.use(
   cors({
-    origin: [env.FRONTEND_URL, 'http://localhost:3000', 'http://localhost:3001'],
+    origin: allowedOrigins,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-xsrf-token'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-xsrf-token'],
   })
 );
+
+app.options('*', cors());
 
 // ─── Body Parsing ───────────────────────────────────────────────────────────
 app.use(express.json({ limit: '5mb' }));
