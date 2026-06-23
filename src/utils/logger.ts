@@ -7,6 +7,18 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} [${level}]: ${stack || message}`;
 });
 
+const transports: winston.transport[] = [
+  new winston.transports.Console()
+];
+
+if (env.NODE_ENV !== 'production') {
+  transports.push(
+    new winston.transports.File({
+      filename: 'logs/app.log'
+    })
+  );
+}
+
 export const logger = winston.createLogger({
   level: env.NODE_ENV === 'development' ? 'debug' : 'info',
   format: combine(
@@ -16,13 +28,5 @@ export const logger = winston.createLogger({
       ? combine(colorize(), logFormat)
       : winston.format.json()
   ),
-  transports: [
-    new winston.transports.Console(),
-    ...(env.NODE_ENV === 'production'
-      ? [
-          new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-          new winston.transports.File({ filename: 'logs/combined.log' }),
-        ]
-      : []),
-  ],
+  transports,
 });
